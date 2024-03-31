@@ -24,6 +24,9 @@ import { renderQuota, showSuccess, timestamp2string } from 'utils/common';
 
 import { IconDotsVertical, IconEdit, IconTrash, IconCaretDownFilled } from '@tabler/icons-react';
 
+// import from index.js in parent path
+import {handleSearchKeyword} from 'views/Token/index';
+
 const COPY_OPTIONS = [
   {
     key: 'next',
@@ -210,9 +213,55 @@ export default function TokensTableRow({ item, manageToken, handleOpenModal, set
             <ButtonGroup size="small" aria-label="split button">
               <Button
                 color="primary"
+                // onClick={() => {
+                //   // fix navigator.clipboard is undefine
+                //   navigator.clipboard.writeText(`sk-${item.key}`);
+                //   showSuccess('已复制到剪贴板！');
+                // }}
+                // onClick={() => {
+                //   // Check if navigator.clipboard is available
+                //   if (navigator.clipboard) {
+                //     // Use navigator.clipboard if available
+                //     navigator.clipboard.writeText(`sk-${item.key}`).then(function() {
+                //       /* clipboard successfully set */
+                //       showSuccess('已复制到剪贴板！');
+                //     }, function() {
+                //       /* clipboard write failed */
+                //       showError('复制到剪贴板失败！');
+                //     });
+                //   } else {
+                //     // Fallback to document.execCommand for older browsers
+                //     var textarea = document.createElement("textarea");
+                //     textarea.value = `sk-${item.key}`;
+                //     document.body.appendChild(textarea);
+                //     textarea.select();
+                //     try {
+                //       var successful = document.execCommand('copy');
+                //       var msg = successful ? '已复制到剪贴板！' : '复制到剪贴板失败！';
+                //       successful ? showSuccess(msg) : showError(msg);
+                //     } catch (err) {
+                //       showError('复制到剪贴板失败！');
+                //     } finally {
+                //       document.body.removeChild(textarea);
+                //     }
+                //   }
+                // }}
                 onClick={() => {
-                  navigator.clipboard.writeText(`sk-${item.key}`);
-                  showSuccess('已复制到剪贴板！');
+                  // Check if navigator.clipboard is available
+                  if (navigator.clipboard) {
+                    // Use navigator.clipboard if available
+                    navigator.clipboard.writeText(`sk-${item.key}`).then(function() {
+                      /* clipboard successfully set */
+                      showSuccess('已复制到剪贴板！');
+                    }, function() {
+                      /* clipboard write failed */
+                      showSuccess('复制到剪贴板失败！');
+                    });
+                  } else {
+                    // Fallback to setting the placeholder of the TableToolBar
+                    handleSearchKeyword(`sk-${item.key}`);
+                    showSuccess('已复制到搜索框！');
+                  }
                 }}
               >
                 复制

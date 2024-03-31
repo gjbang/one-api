@@ -3,20 +3,21 @@ package model
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/songquanpeng/one-api/common"
 	"github.com/songquanpeng/one-api/common/blacklist"
 	"github.com/songquanpeng/one-api/common/config"
 	"github.com/songquanpeng/one-api/common/helper"
 	"github.com/songquanpeng/one-api/common/logger"
 	"gorm.io/gorm"
-	"strings"
 )
 
 // User if you add sensitive fields, don't forget to clean them in setupLogin function.
 // Otherwise, the sensitive information will be saved on local storage in plain text!
 type User struct {
 	Id               int    `json:"id"`
-	Username         string `json:"username" gorm:"unique;index" validate:"max=12"`
+	Username         string `json:"username" gorm:"unique;index" validate:"max=20"`
 	Password         string `json:"password" gorm:"not null;" validate:"min=8,max=20"`
 	DisplayName      string `json:"display_name" gorm:"index" validate:"max=20"`
 	Role             int    `json:"role" gorm:"type:int;default:1"`   // admin, util
@@ -41,21 +42,21 @@ func GetMaxUserId() int {
 }
 
 func GetAllUsers(startIdx int, num int, order string) (users []*User, err error) {
-    query := DB.Limit(num).Offset(startIdx).Omit("password").Where("status != ?", common.UserStatusDeleted)
-    
-    switch order {
-    case "quota":
-        query = query.Order("quota desc")
-    case "used_quota":
-        query = query.Order("used_quota desc")
-    case "request_count":
-        query = query.Order("request_count desc")
-    default:
-        query = query.Order("id desc")
-    }
-    
-    err = query.Find(&users).Error
-    return users, err
+	query := DB.Limit(num).Offset(startIdx).Omit("password").Where("status != ?", common.UserStatusDeleted)
+
+	switch order {
+	case "quota":
+		query = query.Order("quota desc")
+	case "used_quota":
+		query = query.Order("used_quota desc")
+	case "request_count":
+		query = query.Order("request_count desc")
+	default:
+		query = query.Order("id desc")
+	}
+
+	err = query.Find(&users).Error
+	return users, err
 }
 
 func SearchUsers(keyword string) (users []*User, err error) {
