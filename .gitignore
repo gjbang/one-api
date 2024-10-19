@@ -9,3 +9,5 @@ logs
 data
 /web/node_modules
 one-api
+cmd.md
+.env
